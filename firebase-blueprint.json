@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "Parent": {
+      "title": "Parent",
+      "description": "Parent account profile responsible for managing children and learning settings.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique parent ID matching Firebase Auth UID." },
+        "email": { "type": "string", "format": "email", "description": "Parent email address." },
+        "displayName": { "type": "string", "description": "Parent display name." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when account was created." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp when account was last updated." }
+      },
+      "required": ["id", "email", "createdAt", "updatedAt"]
+    },
+    "ChildProfile": {
+      "title": "ChildProfile",
+      "description": "Child learning profile created and managed by the parent.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique child profile ID." },
+        "parentId": { "type": "string", "description": "Owner parent ID." },
+        "displayName": { "type": "string", "description": "First name or nickname for child." },
+        "avatarId": { "type": "string", "description": "Selected avatar identifier." },
+        "age": { "type": "integer", "description": "Age between 5 and 14." },
+        "learningLevel": { "type": "string", "enum": ["BEGINNER", "INTERMEDIATE", "ADVANCED"], "description": "Current learning tier." },
+        "dailyTargetMinutes": { "type": "integer", "description": "Target daily study time in minutes." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Profile creation timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Profile update timestamp." }
+      },
+      "required": ["id", "parentId", "displayName", "avatarId", "age", "learningLevel", "dailyTargetMinutes", "createdAt", "updatedAt"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "Educational subject curriculum area (e.g., English, Urdu, Math).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique subject identifier." },
+        "titleEn": { "type": "string", "description": "English title." },
+        "titleUr": { "type": "string", "description": "Urdu title." },
+        "iconName": { "type": "string", "description": "Icon resource identifier." },
+        "displayOrder": { "type": "integer", "description": "Sort order index." },
+        "isPublished": { "type": "boolean", "description": "Whether visible to learners." }
+      },
+      "required": ["id", "titleEn", "titleUr", "iconName", "displayOrder", "isPublished"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Curriculum lesson within a subject.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique lesson identifier." },
+        "subjectId": { "type": "string", "description": "Parent subject ID." },
+        "titleEn": { "type": "string", "description": "English lesson title." },
+        "titleUr": { "type": "string", "description": "Urdu lesson title." },
+        "order": { "type": "integer", "description": "Lesson sequence number." },
+        "minAge": { "type": "integer", "description": "Recommended minimum age." },
+        "isPublished": { "type": "boolean", "description": "Publication status." }
+      },
+      "required": ["id", "subjectId", "titleEn", "titleUr", "order", "minAge", "isPublished"]
+    },
+    "Step": {
+      "title": "Step",
+      "description": "Atomic learning step within a lesson.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique step identifier." },
+        "lessonId": { "type": "string", "description": "Parent lesson ID." },
+        "stepNumber": { "type": "integer", "description": "Sequence step index." },
+        "stepType": { "type": "string", "enum": ["LEARN", "PRACTICE", "QUIZ", "MASTER"], "description": "Pedagogical step type." },
+        "titleEn": { "type": "string", "description": "English step title." },
+        "titleUr": { "type": "string", "description": "Urdu step title." },
+        "xpReward": { "type": "integer", "description": "XP reward for completion." },
+        "starsReward": { "type": "integer", "description": "Stars awarded for mastery." }
+      },
+      "required": ["id", "lessonId", "stepNumber", "stepType", "titleEn", "titleUr", "xpReward", "starsReward"]
+    },
+    "ChildProgress": {
+      "title": "ChildProgress",
+      "description": "Server-authoritative progress tracking for a child in a subject.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Compound ID: {childId}_{subjectId}." },
+        "childId": { "type": "string", "description": "Child profile ID." },
+        "parentId": { "type": "string", "description": "Owner parent ID." },
+        "subjectId": { "type": "string", "description": "Subject ID." },
+        "completedStepIds": { "type": "array", "description": "List of completed step IDs." },
+        "unlockedStepIds": { "type": "array", "description": "List of unlocked step IDs." },
+        "totalXp": { "type": "integer", "description": "Cumulative verified XP." },
+        "totalStars": { "type": "integer", "description": "Cumulative verified stars." },
+        "streakDays": { "type": "integer", "description": "Current active daily learning streak." },
+        "lastActiveDate": { "type": "string", "description": "ISO date string of last activity." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp." }
+      },
+      "required": ["id", "childId", "parentId", "subjectId", "completedStepIds", "unlockedStepIds", "totalXp", "totalStars", "streakDays", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/parents/{parentId}": {
+      "schema": "Parent",
+      "description": "Parent account documents restricted to the authenticated parent owner."
+    },
+    "/parents/{parentId}/children/{childId}": {
+      "schema": "ChildProfile",
+      "description": "Child learning profiles managed exclusively by the parent."
+    },
+    "/subjects/{subjectId}": {
+      "schema": "Subject",
+      "description": "Read-only published curriculum subjects."
+    },
+    "/subjects/{subjectId}/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Read-only published curriculum lessons."
+    },
+    "/subjects/{subjectId}/lessons/{lessonId}/steps/{stepId}": {
+      "schema": "Step",
+      "description": "Read-only published curriculum steps."
+    },
+    "/progress/{progressId}": {
+      "schema": "ChildProgress",
+      "description": "Authoritative learning progress, step unlocks, and stars."
+    }
+  }
+}

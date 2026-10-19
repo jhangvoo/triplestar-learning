@@ -1,0 +1,116 @@
+<resources>
+    <string name="app_name">TripleStar Learn</string>
+    <string name="app_tagline">Fun, Safe Learning for Young Explorers (Ages 5–14)</string>
+
+    <!-- General -->
+    <string name="action_continue">Continue</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_start">Start</string>
+    <string name="action_back">Back</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Language -->
+    <string name="language_title">Language / زبان</string>
+    <string name="language_english">English</string>
+    <string name="language_urdu">اردو</string>
+    <string name="language_switch_prompt">Switch language to English or Urdu</string>
+
+    <!-- Authentication (Parent) -->
+    <string name="auth_welcome_title">Inspiring Curious Minds</string>
+    <string name="auth_subtitle">Tailored, engaging lessons for children aged 5–14.</string>
+    <string name="auth_parent_section">Parent Portal</string>
+    <string name="auth_parent_desc">Manage profiles, track progress, and oversee learning goals.</string>
+    <string name="auth_sign_in_google">Sign in with Google</string>
+    <string name="auth_sign_out">Sign Out</string>
+    <string name="auth_signed_in_as">Signed in as: %1$s</string>
+    <string name="auth_firebase_pending_title">Backend Configuration Pending</string>
+    <string name="auth_firebase_pending_desc">Firebase backend configuration (google-services.json) is pending provisioning. Once connected, parent authentication and cloud-synced child progress will activate automatically.</string>
+
+    <!-- Child Selection & Management -->
+    <string name="child_select_title">Who is learning today?</string>
+    <string name="child_select_subtitle">Select your child\'s learning profile</string>
+    <string name="child_add_new">Add Child Profile</string>
+    <string name="child_name_label">Child Name or Nickname</string>
+    <string name="child_name_hint">e.g., Ali or Sarah</string>
+    <string name="child_age_label">Age (5–14)</string>
+    <string name="child_age_helper">Ages 5–14 tailored curriculum</string>
+    <string name="child_level_label">Learning Level</string>
+    <string name="child_level_beginner">Explorer (Ages 5–7)</string>
+    <string name="child_level_intermediate">Adventurer (Ages 8–10)</string>
+    <string name="child_level_advanced">Master (Ages 11–14)</string>
+    <string name="child_daily_target_label">Daily Target (Minutes)</string>
+    <string name="child_avatar_label">Select Avatar</string>
+    <string name="child_create_button">Create Profile</string>
+    <string name="child_empty_title">No Child Profiles Yet</string>
+    <string name="child_empty_desc">Create your child\'s first profile to start their learning adventure.</string>
+    <string name="child_switch_profile">Switch Learner</string>
+
+    <!-- Main Navigation Tabs -->
+    <string name="nav_learn">Learn</string>
+    <string name="nav_practice">Practice</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">Ready to learn, %1$s? ⭐</string>
+    <string name="dashboard_today_title">Today\'s Learning Plan</string>
+    <string name="dashboard_today_desc">Complete your daily lessons to keep your learning streak alive.</string>
+    <string name="dashboard_streak_label">%1$d Day Streak</string>
+    <string name="dashboard_stars_label">%1$d Stars</string>
+    <string name="dashboard_xp_label">%1$d XP</string>
+    <string name="dashboard_subjects_title">Learning Adventures</string>
+    <string name="dashboard_daily_goal">Daily Goal: %1$d / %2$d min</string>
+    <string name="dashboard_empty_progress_title">Ready to Begin!</string>
+    <string name="dashboard_empty_progress_desc">No learning activities recorded yet. Select a subject below to earn your first star!</string>
+
+    <!-- Subjects -->
+    <string name="subject_english">English Literacy</string>
+    <string name="subject_urdu">اردو زبان (Urdu)</string>
+    <string name="subject_math">Mathematics</string>
+    <string name="subject_science">Science &amp; Nature</string>
+    <string name="subject_general_knowledge">General Knowledge</string>
+
+    <!-- Step Locking States -->
+    <string name="step_locked">Locked</string>
+    <string name="step_available">Ready to Learn</string>
+    <string name="step_in_progress">In Progress</string>
+    <string name="step_completed">Completed</string>
+    <string name="step_mastered">Mastered ⭐</string>
+    <string name="step_lock_desc">Complete the previous learning step to unlock this activity.</string>
+
+    <!-- Parental Gate -->
+    <string name="parent_gate_title">Parental Verification</string>
+    <string name="parent_gate_desc">Please verify you are an adult before accessing parental controls.</string>
+    <string name="parent_gate_challenge">What is %1$d × %2$d?</string>
+    <string name="parent_gate_answer_hint">Enter answer</string>
+    <string name="parent_gate_verify">Verify &amp; Enter</string>
+    <string name="parent_gate_error">Incorrect answer. Please try the new challenge.</string>
+
+    <!-- Parent Settings -->
+    <string name="parent_settings_title">Parent Zone</string>
+    <string name="parent_settings_subtitle">Oversight, Profiles, and Child Safety Controls</string>
+    <string name="parent_settings_manage_children">Manage Child Profiles</string>
+    <string name="parent_settings_learning_limits">Screen Time &amp; Daily Limits</string>
+    <string name="parent_settings_privacy">Privacy &amp; Safety Compliance (COPPA)</string>
+    <string name="parent_settings_coppa_info">TripleStar Learn complies with Google Play Families and COPPA policies. No personal information is shared, and all progress is verified securely.</string>
+
+    <!-- Fixed Ads Foundation -->
+    <string name="ad_container_notice">Child-Safe Sponsored Partner Placement</string>
+    <string name="ad_container_placeholder">Fixed educational sponsor slot (COPPA compliant, non-personalized)</string>
+    <!-- Badges & Virtual Stickers System -->
+    <string name="badges_title">Badges &amp; Stickers</string>
+    <string name="badges_subtitle">Collect stickers by mastering learning milestones</string>
+    <string name="badges_filter_all">All Stickers</string>
+    <string name="badges_filter_math">Math</string>
+    <string name="badges_filter_english">English</string>
+    <string name="badges_collected_count">%1$d of %2$d Stickers Collected</string>
+    <string name="badge_unlocked_dialog_title">🎉 Sticker Unlocked!</string>
+    <string name="badge_unlocked_dialog_subtitle">Milestone Achieved in %1$s!</string>
+    <string name="badge_claim_button">Collect Sticker ⭐</string>
+    <string name="badge_status_locked">Milestone Locked</string>
+    <string name="badge_status_unlocked">Sticker Collected! ⭐</string>
+    <string name="web_client_id" translatable="false">495305563200-bkab4lgtk0ut96dl112vcsvsq6ruq7tn.apps.googleusercontent.com</string>
+</resources>

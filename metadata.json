@@ -1,0 +1,8 @@
+{
+  "name": "TripleStar Learning",
+  "description": "Fun, safe, bilingual educational app for kids aged 5-14 featuring step locking curriculum.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

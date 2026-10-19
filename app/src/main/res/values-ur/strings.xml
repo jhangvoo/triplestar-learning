@@ -1,0 +1,114 @@
+<resources>
+    <string name="app_name">ٹرپل اسٹار لرن</string>
+    <string name="app_tagline">چھوٹے بچوں کے لیے دلچسپ اور محفوظ تعلیمی سفر (عمر 5 تا 14 سال)</string>
+
+    <!-- General -->
+    <string name="action_continue">آگے بڑھیں</string>
+    <string name="action_save">محفوظ کریں</string>
+    <string name="action_cancel">منسوخ کریں</string>
+    <string name="action_close">بند کریں</string>
+    <string name="action_retry">دوبارہ کوشش کریں</string>
+    <string name="action_start">شروع کریں</string>
+    <string name="action_back">واپس</string>
+    <string name="loading">لوڈ ہو رہا ہے…</string>
+
+    <!-- Language -->
+    <string name="language_title">زبان / Language</string>
+    <string name="language_english">English</string>
+    <string name="language_urdu">اردو</string>
+    <string name="language_switch_prompt">زبان تبدیل کریں: انگریزی یا اردو</string>
+
+    <!-- Authentication (Parent) -->
+    <string name="auth_welcome_title">سیکھنے کا بہترین ساتھی</string>
+    <string name="auth_subtitle">5 سے 14 سال کے بچوں کے لیے بہترین تعلیمی مواد۔</string>
+    <string name="auth_parent_section">والدین کا پورٹل</string>
+    <string name="auth_parent_desc">پروفائلز کا انتظام، پیش رفت کی نگرانی، اور تعلیمی اہداف کا تعین۔</string>
+    <string name="auth_sign_in_google">گوگل کے ساتھ سائن ان کریں</string>
+    <string name="auth_sign_out">لاگ آؤٹ کریں</string>
+    <string name="auth_signed_in_as">لاگ ان بذریعہ: %1$s</string>
+    <string name="auth_firebase_pending_title">بیک اینڈ کنفیگریشن باقی ہے</string>
+    <string name="auth_firebase_pending_desc">فائر بیس بیک اینڈ کنفیگریشن (google-services.json) ابھی منسلک نہیں ہے۔ جڑنے کے بعد گوگل سائن ان اور کلاؤڈ پروگریس سنک خودکار طور پر فعال ہو جائیں گے۔</string>
+
+    <!-- Child Selection & Management -->
+    <string name="child_select_title">آج کون سیکھ رہا ہے؟</string>
+    <string name="child_select_subtitle">اپنے بچے کا تعلیمی پروفائل منتخب کریں</string>
+    <string name="child_add_new">نیا پروفائل شامل کریں</string>
+    <string name="child_name_label">بچے کا نام یا عرفیت</string>
+    <string name="child_name_hint">مثلاً علی یا سارہ</string>
+    <string name="child_age_label">عمر (5 تا 14 سال)</string>
+    <string name="child_age_helper">5 تا 14 سال کے مطابق نصاب</string>
+    <string name="child_level_label">تعلیمی سطح</string>
+    <string name="child_level_beginner">ابتدائی کھوجی (عمر 5 تا 7)</string>
+    <string name="child_level_intermediate">درمیانی مہم جو (عمر 8 تا 10)</string>
+    <string name="child_level_advanced">ماہر طالب علم (عمر 11 تا 14)</string>
+    <string name="child_daily_target_label">روزانہ کا ہدف (منٹ)</string>
+    <string name="child_avatar_label">اواتار منتخب کریں</string>
+    <string name="child_create_button">پروفائل بنائیں</string>
+    <string name="child_empty_title">ابھی تک کوئی پروفائل نہیں ہے</string>
+    <string name="child_empty_desc">سیکھنے کا آغاز کرنے کے لیے اپنے بچے کا پہلا پروفائل بنائیں۔</string>
+    <string name="child_switch_profile">طالب علم تبدیل کریں</string>
+
+    <!-- Main Navigation Tabs -->
+    <string name="nav_learn">سیکھیں</string>
+    <string name="nav_practice">مشق</string>
+    <string name="nav_progress">پیش رفت</string>
+    <string name="nav_profile">پروفائل</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">سیکھنے کے لیے تیار، %1$s؟ ⭐</string>
+    <string name="dashboard_today_title">آج کا تعلیمی پلان</string>
+    <string name="dashboard_today_desc">اپنا تسلسل برقرار رکھنے کے لیے آج کے اسباق مکمل کریں۔</string>
+    <string name="dashboard_streak_label">%1$d دن کا تسلسل</string>
+    <string name="dashboard_stars_label">%1$d ستارے</string>
+    <string name="dashboard_xp_label">%1$d ایکس پی</string>
+    <string name="dashboard_subjects_title">تعلیمی مضامین</string>
+    <string name="dashboard_daily_goal">روزانہ کا ہدف: %1$d / %2$d منٹ</string>
+    <string name="dashboard_empty_progress_title">آئیے آغاز کریں!</string>
+    <string name="dashboard_empty_progress_desc">ابھی تک کوئی تعلیمی سرگرمی ریکارڈ نہیں ہوئی۔ پہلا ستارہ جیتنے کے لیے نیچے دیا گیا کوئی مضمون منتخب کریں!</string>
+
+    <!-- Subjects -->
+    <string name="subject_english">انگریزی زبان</string>
+    <string name="subject_urdu">اردو زبان و ادب</string>
+    <string name="subject_math">ریاضی (میتھس)</string>
+    <string name="subject_science">سائنس اور فطرت</string>
+    <string name="subject_general_knowledge">عام معلومات (جنرل نالج)</string>
+
+    <!-- Step Locking States -->
+    <string name="step_locked">مقفل ہے</string>
+    <string name="step_available">سیکھنے کے لیے تیار</string>
+    <string name="step_in_progress">جاری ہے</string>
+    <string name="step_completed">مکمل ہو گیا</string>
+    <string name="step_mastered">مکمل مہارت ⭐</string>
+    <string name="step_lock_desc">اس سرگرمی کو کھولنے کے لیے پچھلا سبق مکمل کریں۔</string>
+
+    <!-- Parental Gate -->
+    <string name="parent_gate_title">والدین کی تصدیق</string>
+    <string name="parent_gate_desc">براہ کرم ترتیبات میں داخل ہونے سے پہلے بالغ ہونے کی تصدیق کریں۔</string>
+    <string name="parent_gate_challenge">%1$d × %2$d کتنا ہوتا ہے؟</string>
+    <string name="parent_gate_answer_hint">جواب درج کریں</string>
+    <string name="parent_gate_verify">تصدیق کریں اور داخل ہوں</string>
+    <string name="parent_gate_error">غلط جواب! نیا سوال حل کرنے کی کوشش کریں۔</string>
+
+    <!-- Parent Settings -->
+    <string name="parent_settings_title">والدین کا زون</string>
+    <string name="parent_settings_subtitle">نگرانی، بچوں کے پروفائلز اور حفاظتی ترتیبات</string>
+    <string name="parent_settings_manage_children">بچوں کے پروفائلز سنبھالیں</string>
+    <string name="parent_settings_learning_limits">اسکرین ٹائم اور روزانہ کی حد</string>
+    <string name="parent_settings_privacy">پرائیویسی اور چائلڈ سیفٹی (COPPA)</string>
+    <string name="parent_settings_coppa_info">ٹرپل اسٹار لرن گوگل پلے فیملیز اور COPPA کی سخت پالیسیوں پر عمل پیرا ہے۔ کوئی غیر ضروری ذاتی معلومات شیئر نہیں کی جاتی۔</string>
+
+    <!-- Fixed Ads Foundation -->
+    <string name="ad_container_notice">بچوں کے لیے محفوظ اسپانسرڈ پارٹنر سلاٹ</string>
+    <!-- Badges & Virtual Stickers System -->
+    <string name="badges_title">بیجز اور اسٹیکرز</string>
+    <string name="badges_subtitle">تعلیمی سنگ میل عبور کر کے اسٹیکرز جمع کریں</string>
+    <string name="badges_filter_all">تمام اسٹیکرز</string>
+    <string name="badges_filter_math">ریاضی</string>
+    <string name="badges_filter_english">انگریزی</string>
+    <string name="badges_collected_count">%2$d میں سے %1$d حاصل ہوئے</string>
+    <string name="badge_unlocked_dialog_title">🎉 نیا اسٹیکر ملا!</string>
+    <string name="badge_unlocked_dialog_subtitle">%1$s میں سنگ میل مکمل ہوا!</string>
+    <string name="badge_claim_button">اسٹیکر وصول کریں ⭐</string>
+    <string name="badge_status_locked">بند سنگ میل</string>
+    <string name="badge_status_unlocked">اسٹیکر حاصل ہو گیا! ⭐</string>
+</resources>

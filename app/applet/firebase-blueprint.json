@@ -1,0 +1,20 @@
+{
+  "users": {
+    "type": "collection",
+    "path": "users/{userId}",
+    "description": "User profile and data collections.",
+    "children": {
+      "tasks": {
+        "type": "collection",
+        "path": "users/{userId}/tasks/{taskId}",
+        "description": "Tasks saved by the user.",
+        "fields": {
+          "title": "string",
+          "isCompleted": "boolean",
+          "createdAt": "timestamp",
+          "userId": "string"
+        }
+      }
+    }
+  }
+}

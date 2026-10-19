@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Center Hero Star (TripleStar Gold) -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M54,26L62.5,43.2L81.5,46L67.8,59.3L71,78.2L54,69.3L37,78.2L40.2,59.3L26.5,46L45.5,43.2Z" />
+    <!-- Bright Star Highlight -->
+    <path
+        android:fillColor="#FDE68A"
+        android:pathData="M54,26L54,69.3L71,78.2L67.8,59.3L81.5,46L62.5,43.2Z" />
+    <!-- Top-left Companion Star -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M30,22L33,28L39.5,29L35,33.5L36,40L30,37L24,40L25,33.5L20.5,29L27,28Z" />
+    <!-- Top-right Companion Star -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M78,22L81,28L87.5,29L83,33.5L84,40L78,37L72,40L73,33.5L68.5,29L75,28Z" />
+</vector>
