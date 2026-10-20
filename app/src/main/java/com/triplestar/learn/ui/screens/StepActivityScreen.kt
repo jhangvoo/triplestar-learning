@@ -25,11 +25,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.triplestar.learn.R
+import com.triplestar.learn.data.model.Badge
 import com.triplestar.learn.data.repository.CurriculumRepository
 import com.triplestar.learn.data.repository.ProgressRepository
+import com.triplestar.learn.ui.components.BadgeCelebrationDialog
 import com.triplestar.learn.ui.theme.AstroBluePrimary
 import com.triplestar.learn.ui.theme.EmeraldSuccess
 import com.triplestar.learn.ui.theme.StarGoldPrimary
+import com.triplestar.learn.util.BadgeManager
 import com.triplestar.learn.util.LocaleManager
 import kotlinx.coroutines.launch
 
@@ -49,6 +52,7 @@ fun StepActivityScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val currentLang by LocaleManager.currentLanguage.collectAsState()
+    val currentProgress by progressRepository.observeProgress(childId, subjectId).collectAsState(initial = null)
     val allSteps = remember(lessonId) { curriculumRepository.getStepsForLesson(lessonId) }
     val currentStep = remember(allSteps, stepId) { allSteps.firstOrNull { it.id == stepId } ?: allSteps.firstOrNull() }
 
@@ -58,6 +62,7 @@ fun StepActivityScreen(
 
     var isSubmitting by remember { mutableStateOf(false) }
     var hasCompleted by remember { mutableStateOf(false) }
+    var unlockedBadgeCelebration by remember { mutableStateOf<Badge?>(null) }
 
     val questions = currentStep?.questions ?: emptyList()
     val currentQuestion = questions.firstOrNull()
@@ -307,6 +312,12 @@ fun StepActivityScreen(
                     if (currentStep != null && !isSubmitting && !hasCompleted && canComplete) {
                         isSubmitting = true
                         coroutineScope.launch {
+                            val previousCompletedCount = currentProgress?.completedStepIds?.size ?: 0
+                            val previousStars = currentProgress?.totalStars ?: 0
+                            val isFirstTime = currentProgress?.completedStepIds?.contains(currentStep.id) != true
+                            val newCompletedCount = previousCompletedCount + (if (isFirstTime) 1 else 0)
+                            val newStars = previousStars + (if (isFirstTime) currentStep.starsReward else 0)
+
                             val result = progressRepository.recordStepCompletion(
                                 childId = childId,
                                 parentId = parentId,
@@ -317,7 +328,18 @@ fun StepActivityScreen(
                             isSubmitting = false
                             if (result.isSuccess) {
                                 hasCompleted = true
-                                onStepCompleted()
+                                val newBadge = BadgeManager.checkForNewUnlock(
+                                    subjectId = subjectId,
+                                    previousCompletedCount = previousCompletedCount,
+                                    newCompletedCount = newCompletedCount,
+                                    previousStars = previousStars,
+                                    newStars = newStars
+                                )
+                                if (newBadge != null) {
+                                    unlockedBadgeCelebration = newBadge
+                                } else {
+                                    onStepCompleted()
+                                }
                             }
                         }
                     }
@@ -341,6 +363,16 @@ fun StepActivityScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+
+            unlockedBadgeCelebration?.let { badge ->
+                BadgeCelebrationDialog(
+                    badge = badge,
+                    onDismiss = {
+                        unlockedBadgeCelebration = null
+                        onStepCompleted()
+                    }
+                )
             }
         }
     }

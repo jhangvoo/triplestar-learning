@@ -248,3 +248,133 @@ fun BadgeDetailDialog(
         }
     }
 }
+
+@Composable
+fun BadgeCelebrationDialog(
+    badge: Badge,
+    onDismiss: () -> Unit
+) {
+    val currentLang by LocaleManager.currentLanguage.collectAsState()
+    val title = if (currentLang == LocaleManager.LANG_URDU) badge.titleUr.ifEmpty { badge.title } else badge.titleEn.ifEmpty { badge.title }
+    val desc = if (currentLang == LocaleManager.LANG_URDU) badge.descriptionUr.ifEmpty { badge.descriptionEn } else badge.descriptionEn
+
+    var animationStarted by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        animationStarted = true
+    }
+
+    val celebrationScale by animateFloatAsState(
+        targetValue = if (animationStarted) 1f else 0.4f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "celebrationScale"
+    )
+
+    val subjectName = when (badge.subjectId) {
+        "math" -> stringResource(R.string.badges_filter_math)
+        "english" -> stringResource(R.string.badges_filter_english)
+        else -> stringResource(R.string.badges_filter_all)
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .testTag("badge_celebration_dialog")
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Header Title
+                Text(
+                    text = stringResource(R.string.badge_unlocked_dialog_title),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = stringResource(R.string.badge_unlocked_dialog_subtitle, subjectName),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Giant bouncy celebratory sticker
+                Box(
+                    modifier = Modifier
+                        .size(108.dp)
+                        .graphicsLayer(scaleX = celebrationScale, scaleY = celebrationScale)
+                        .clip(CircleShape)
+                        .background(Color(badge.colorHex).copy(alpha = 0.25f))
+                        .border(
+                            width = 4.dp,
+                            color = Color(badge.colorHex),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = badge.stickerEmoji,
+                        fontSize = 56.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Badge Name
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Badge Description
+                Text(
+                    text = desc,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Collect Button
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("btn_claim_sticker"),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = StarGoldPrimary,
+                        contentColor = TextPrimaryLight
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.badge_claim_button),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        }
+    }
+}
+

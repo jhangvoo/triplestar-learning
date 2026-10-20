@@ -35,6 +35,8 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     child: ChildProfile,
     progress: ChildProgress?,
+    mathProgress: ChildProgress? = null,
+    englishProgress: ChildProgress? = progress,
     childRepository: ChildProfileRepository,
     onSwitchLearner: () -> Unit,
     onBack: (() -> Unit)? = null,
@@ -229,16 +231,19 @@ fun ProfileScreen(
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    val combinedXp = (mathProgress?.totalXp ?: 0) + (englishProgress?.totalXp ?: (progress?.totalXp ?: 0))
+                    val combinedMilestones = (mathProgress?.completedStepIds?.size ?: 0) + (englishProgress?.completedStepIds?.size ?: (progress?.completedStepIds?.size ?: 0))
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "${progress?.totalXp ?: 0}", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = AstroBluePrimary)
+                            Text(text = "$combinedXp", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = AstroBluePrimary)
                             Text(text = "Total XP", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "${progress?.completedStepIds?.size ?: 0}", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = EmeraldSuccess)
+                            Text(text = "$combinedMilestones", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = EmeraldSuccess)
                             Text(text = "Milestones", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -255,8 +260,11 @@ fun ProfileScreen(
             var selectedFilter by remember { mutableStateOf("all") }
             var selectedBadgeStatus by remember { mutableStateOf<BadgeUnlockStatus?>(null) }
 
-            val badgeStatuses = remember(progress) {
-                BadgeManager.evaluateBadges(progress, progress)
+            val badgeStatuses = remember(mathProgress, englishProgress, progress) {
+                BadgeManager.evaluateBadges(
+                    mathProgress = mathProgress,
+                    englishProgress = englishProgress ?: progress
+                )
             }
 
             val filteredBadges = remember(badgeStatuses, selectedFilter) {

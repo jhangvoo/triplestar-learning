@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Face
@@ -31,6 +33,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -39,6 +42,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import com.triplestar.learn.data.model.BadgeUnlockStatus
+import com.triplestar.learn.ui.components.BadgeDetailDialog
+import com.triplestar.learn.ui.components.BadgeGridItem
+import com.triplestar.learn.util.BadgeManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -78,10 +85,13 @@ import androidx.compose.ui.platform.LocalContext
 fun MainDashboardScreen(
     child: ChildProfile,
     progress: ChildProgress?,
+    mathProgress: ChildProgress? = null,
+    englishProgress: ChildProgress? = progress,
     subjects: List<Subject>,
     adRepository: AdRepository,
     onSwitchLearner: () -> Unit,
     onNavigateToParentSettings: () -> Unit,
+    onSubjectClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -152,12 +162,26 @@ fun MainDashboardScreen(
                 0 -> LearnTabContent(
                     child = child,
                     progress = progress,
+                    mathProgress = mathProgress,
+                    englishProgress = englishProgress,
                     subjects = subjects,
-                    adRepository = adRepository
+                    adRepository = adRepository,
+                    onSubjectClick = onSubjectClick
                 )
                 1 -> PracticeTabContent(adRepository = adRepository)
-                2 -> ProgressTabContent(child = child, progress = progress)
-                3 -> ProfileTabContent(child = child, progress = progress, onSwitchLearner = onSwitchLearner)
+                2 -> ProgressTabContent(
+                    child = child,
+                    mathProgress = mathProgress,
+                    englishProgress = englishProgress,
+                    progress = progress
+                )
+                3 -> ProfileTabContent(
+                    child = child,
+                    progress = progress,
+                    mathProgress = mathProgress,
+                    englishProgress = englishProgress,
+                    onSwitchLearner = onSwitchLearner
+                )
             }
         }
     }
@@ -230,10 +254,15 @@ private fun DashboardTopBar(
 private fun LearnTabContent(
     child: ChildProfile,
     progress: ChildProgress?,
+    mathProgress: ChildProgress? = null,
+    englishProgress: ChildProgress? = progress,
     subjects: List<Subject>,
-    adRepository: AdRepository
+    adRepository: AdRepository,
+    onSubjectClick: (String) -> Unit
 ) {
     val currentLang by LocaleManager.currentLanguage.collectAsState()
+    val combinedStars = (mathProgress?.totalStars ?: 0) + (englishProgress?.totalStars ?: (progress?.totalStars ?: 0))
+    val combinedXp = (mathProgress?.totalXp ?: 0) + (englishProgress?.totalXp ?: (progress?.totalXp ?: 0))
 
     LazyColumn(
         modifier = Modifier
@@ -254,9 +283,9 @@ private fun LearnTabContent(
                 StreakPill(streakDays = currentStreak, modifier = Modifier.weight(1f))
 
                 Spacer(modifier = Modifier.width(8.dp))
-                StarsPill(stars = progress?.totalStars ?: 0, modifier = Modifier.weight(1f))
+                StarsPill(stars = combinedStars, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(8.dp))
-                XpPill(xp = progress?.totalXp ?: 0, modifier = Modifier.weight(1f))
+                XpPill(xp = combinedXp, modifier = Modifier.weight(1f))
             }
         }
 
@@ -321,7 +350,7 @@ private fun LearnTabContent(
             SubjectCard(
                 subject = subject,
                 displayTitle = title,
-                onClick = { /* Step Locking and subject detail in Phase 2 */ }
+                onClick = { onSubjectClick(subject.id) }
             )
         }
 
@@ -464,11 +493,42 @@ private fun PracticeTabContent(adRepository: AdRepository) {
 }
 
 @Composable
-private fun ProgressTabContent(child: ChildProfile, progress: ChildProgress?) {
+private fun ProgressTabContent(
+    child: ChildProfile,
+    mathProgress: ChildProgress?,
+    englishProgress: ChildProgress?,
+    progress: ChildProgress?
+) {
+    val totalStars = (mathProgress?.totalStars ?: 0) + (englishProgress?.totalStars ?: (progress?.totalStars ?: 0))
+    val totalXp = (mathProgress?.totalXp ?: 0) + (englishProgress?.totalXp ?: (progress?.totalXp ?: 0))
+    val totalCompletedSteps = (mathProgress?.completedStepIds?.size ?: 0) + (englishProgress?.completedStepIds?.size ?: (progress?.completedStepIds?.size ?: 0))
+
+    var selectedFilter by remember { mutableStateOf("all") }
+    var selectedBadgeStatus by remember { mutableStateOf<BadgeUnlockStatus?>(null) }
+
+    val badgeStatuses = remember(mathProgress, englishProgress, progress) {
+        BadgeManager.evaluateBadges(
+            mathProgress = mathProgress,
+            englishProgress = englishProgress ?: progress
+        )
+    }
+
+    val filteredBadges = remember(badgeStatuses, selectedFilter) {
+        when (selectedFilter) {
+            "math" -> badgeStatuses.filter { it.badge.subjectId == "math" }
+            "english" -> badgeStatuses.filter { it.badge.subjectId == "english" }
+            else -> badgeStatuses
+        }
+    }
+
+    val unlockedCount = badgeStatuses.count { it.isUnlocked }
+    val totalCount = badgeStatuses.size
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
             .testTag("tab_progress_content")
     ) {
         Text(
@@ -476,41 +536,204 @@ private fun ProgressTabContent(child: ChildProfile, progress: ChildProgress?) {
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Learner Overview Card
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("card_learner_progress_overview")
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = child.displayName,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Total XP: ${progress?.totalXp ?: 0}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Total Stars: ${progress?.totalStars ?: 0} ⭐",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Completed Steps: ${progress?.completedStepIds?.size ?: 0}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            Column(modifier = Modifier.padding(20.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(54.dp)
+                            .clip(CircleShape)
+                            .background(StarGoldPrimary.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Face,
+                            contentDescription = null,
+                            tint = AstroBluePrimary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Column {
+                        Text(
+                            text = child.displayName,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = "Age ${child.age} • ${child.learningLevel} • ${child.dailyTargetMinutes}m Daily Goal",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "$totalStars ⭐",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = StarGoldPrimary
+                        )
+                        Text(
+                            text = "Total Stars",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "$totalXp",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = AstroBluePrimary
+                        )
+                        Text(
+                            text = "Total XP",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "$totalCompletedSteps",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = EmeraldSuccess
+                        )
+                        Text(
+                            text = "Milestones",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Badges & Virtual Stickers Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.badges_title),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = stringResource(R.string.badges_collected_count, unlockedCount, totalCount),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = stringResource(R.string.badges_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Filter Chips
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = selectedFilter == "all",
+                onClick = { selectedFilter = "all" },
+                label = { Text(stringResource(R.string.badges_filter_all)) },
+                modifier = Modifier.testTag("filter_chip_all")
+            )
+            FilterChip(
+                selected = selectedFilter == "math",
+                onClick = { selectedFilter = "math" },
+                label = { Text(stringResource(R.string.badges_filter_math)) },
+                modifier = Modifier.testTag("filter_chip_math")
+            )
+            FilterChip(
+                selected = selectedFilter == "english",
+                onClick = { selectedFilter = "english" },
+                label = { Text(stringResource(R.string.badges_filter_english)) },
+                modifier = Modifier.testTag("filter_chip_english")
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Badge Grid
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("progress_badge_grid")
+        ) {
+            val chunks = filteredBadges.chunked(2)
+            chunks.forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    rowItems.forEach { status ->
+                        Box(modifier = Modifier.weight(1f)) {
+                            BadgeGridItem(
+                                status = status,
+                                onClick = { selectedBadgeStatus = status }
+                            )
+                        }
+                    }
+                    if (rowItems.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+        }
+
+        selectedBadgeStatus?.let { status ->
+            BadgeDetailDialog(
+                status = status,
+                onDismiss = { selectedBadgeStatus = null }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
 @Composable
-private fun ProfileTabContent(child: ChildProfile, progress: ChildProgress?, onSwitchLearner: () -> Unit) {
+private fun ProfileTabContent(
+    child: ChildProfile,
+    progress: ChildProgress?,
+    mathProgress: ChildProgress?,
+    englishProgress: ChildProgress?,
+    onSwitchLearner: () -> Unit
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val childRepository = remember { com.triplestar.learn.data.repository.ChildProfileRepository(context) }
     ProfileScreen(
         child = child,
         progress = progress,
+        mathProgress = mathProgress,
+        englishProgress = englishProgress ?: progress,
         childRepository = childRepository,
         onSwitchLearner = onSwitchLearner,
         modifier = Modifier.testTag("tab_profile_content")

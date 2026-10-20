@@ -136,14 +136,21 @@ fun AppNavigation(
                     age = 7
                 )
 
-            val childProgress by progressRepository.observeProgress(
+            val englishProgress by progressRepository.observeProgress(
                 childId = activeChild.id,
                 subjectId = "english"
             ).collectAsState(initial = null)
 
+            val mathProgress by progressRepository.observeProgress(
+                childId = activeChild.id,
+                subjectId = "math"
+            ).collectAsState(initial = null)
+
             MainDashboardScreen(
                 child = activeChild,
-                progress = childProgress,
+                progress = englishProgress,
+                mathProgress = mathProgress,
+                englishProgress = englishProgress,
                 subjects = subjects,
                 adRepository = adRepository,
                 onSwitchLearner = {
@@ -153,6 +160,9 @@ fun AppNavigation(
                 },
                 onNavigateToParentSettings = {
                     navController.navigate(NavRoutes.ParentSettings.route)
+                },
+                onSubjectClick = { subjectId ->
+                    navController.navigate(NavRoutes.SubjectDetail.createRoute(activeChild.id, subjectId))
                 }
             )
         }

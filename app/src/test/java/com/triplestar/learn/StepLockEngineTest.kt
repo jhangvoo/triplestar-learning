@@ -98,4 +98,29 @@ class StepLockEngineTest {
         assertEquals(10, updatedProgress.totalXp)
         assertEquals(1, updatedProgress.totalStars)
     }
+
+    @Test
+    fun `re-completing already completed step does not duplicate XP or stars`() {
+        val completedProgress = ChildProgress(
+            id = "child1_math",
+            childId = "child1",
+            parentId = "parent1",
+            subjectId = "math",
+            completedStepIds = listOf("step_1"),
+            unlockedStepIds = listOf("step_1", "step_2"),
+            totalXp = 10,
+            totalStars = 1
+        )
+
+        val updatedProgress = StepLockEngine.computeProgressAfterStepCompletion(
+            currentProgress = completedProgress,
+            completedStep = lessonSteps[0],
+            allStepsInLesson = lessonSteps
+        )
+
+        assertEquals(listOf("step_1"), updatedProgress.completedStepIds)
+        assertEquals(10, updatedProgress.totalXp)
+        assertEquals(1, updatedProgress.totalStars)
+    }
 }
+
