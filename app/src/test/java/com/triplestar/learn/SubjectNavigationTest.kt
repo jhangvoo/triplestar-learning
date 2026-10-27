@@ -21,9 +21,9 @@ class SubjectNavigationTest {
     private val curriculumRepo = CurriculumRepository()
 
     @Test
-    fun `verify subject detail routes for all five curriculum subjects`() {
+    fun `verify subject detail routes for all curriculum subjects`() {
         val testChildId = "test_child_456"
-        val expectedSubjects = listOf("english", "urdu", "math", "science", "general_knowledge")
+        val expectedSubjects = listOf("english", "math", "science", "art", "computer", "urdu", "general_knowledge")
 
         expectedSubjects.forEach { subjectId ->
             val route = NavRoutes.SubjectDetail.createRoute(testChildId, subjectId)
@@ -34,18 +34,20 @@ class SubjectNavigationTest {
     }
 
     @Test
-    fun `verify all five subjects are provided by curriculum repository`() = runBlocking {
+    fun `verify all subjects are provided by curriculum repository`() = runBlocking {
         val subjects = curriculumRepo.getSubjects().first()
         val subjectIds = subjects.map { it.id }
 
-        assertEquals(5, subjects.size)
+        assertEquals(7, subjects.size)
         assertTrue(subjectIds.contains("english"))
-        assertTrue(subjectIds.contains("urdu"))
         assertTrue(subjectIds.contains("math"))
         assertTrue(subjectIds.contains("science"))
+        assertTrue(subjectIds.contains("art"))
+        assertTrue(subjectIds.contains("computer"))
+        assertTrue(subjectIds.contains("urdu"))
         assertTrue(subjectIds.contains("general_knowledge"))
 
-        // Verify English and Urdu titles exist for all 5
+        // Verify English and Urdu titles exist for all 7
         subjects.forEach { subject ->
             assertTrue(subject.titleEn.isNotBlank())
             assertTrue(subject.titleUr.isNotBlank())
@@ -54,7 +56,7 @@ class SubjectNavigationTest {
 
     @Test
     fun `verify lessons and steps exist for each subject`() {
-        val subjectIds = listOf("english", "urdu", "math", "science", "general_knowledge")
+        val subjectIds = listOf("english", "math", "science", "art", "computer", "urdu", "general_knowledge")
 
         subjectIds.forEach { subjectId ->
             val lessons = curriculumRepo.getLessonsForSubject(subjectId)
@@ -119,5 +121,21 @@ class SubjectNavigationTest {
         )
         assertNotNull(newBadge)
         assertEquals("math_explorer", newBadge?.id)
+    }
+
+    @Test
+    fun `verify educational categories icons and color attributes are configured`() = runBlocking {
+        val subjects = curriculumRepo.getSubjects().first()
+        val subjectMap = subjects.associateBy { it.id }
+
+        val requiredCategories = listOf("english", "math", "science", "art", "computer")
+        requiredCategories.forEach { categoryId ->
+            val category = subjectMap[categoryId]
+            assertNotNull("Category $categoryId must exist", category)
+            assertTrue("Category $categoryId must have non-blank title", category!!.titleEn.isNotBlank())
+            assertTrue("Category $categoryId must have non-blank subtitle", category.subtitleEn.isNotBlank())
+            assertTrue("Category $categoryId must have valid iconName", category.iconName.isNotBlank())
+            assertTrue("Category $categoryId must have colorHex configured", category.colorHex != 0L)
+        }
     }
 }

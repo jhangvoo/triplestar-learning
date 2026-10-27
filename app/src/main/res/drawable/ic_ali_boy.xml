@@ -1,0 +1,77 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="150dp"
+    android:viewportWidth="120"
+    android:viewportHeight="150">
+
+  <!-- Left/Body (Blue Hoodie & Jeans) -->
+  <path
+      android:fillColor="#2563EB"
+      android:pathData="M38,80 C38,65 48,60 60,60 C72,60 82,65 82,80 L88,125 C88,128 85,130 80,130 L40,130 C35,130 32,128 32,125 Z"/>
+
+  <!-- Left Arm (Holding ABC) -->
+  <path
+      android:fillColor="#1D4ED8"
+      android:pathData="M35,75 C25,85 28,100 35,105 C40,108 45,95 40,85 Z"/>
+
+  <!-- Right Arm (Waving Hand up) -->
+  <path
+      android:fillColor="#1D4ED8"
+      android:pathData="M78,70 C92,60 102,45 105,35 C108,25 102,22 98,28 C92,38 85,55 75,68 Z"/>
+  <!-- Waving Hand Fingers -->
+  <path
+      android:fillColor="#FFE0BD"
+      android:pathData="M102,28 C105,24 108,26 106,30 C109,26 112,28 108,33 C111,29 114,32 110,37 C106,38 103,35 102,28 Z"/>
+
+  <!-- Head / Face -->
+  <path
+      android:fillColor="#FFE0BD"
+      android:pathData="M42,42 C42,24 49,18 60,18 C71,18 78,24 78,42 C78,56 71,64 60,64 C49,64 42,56 42,42 Z"/>
+
+  <!-- Boy Messy Hair -->
+  <path
+      android:fillColor="#1E293B"
+      android:pathData="M38,38 C38,18 47,12 60,12 C73,12 82,18 82,38 C82,43 78,38 75,30 C70,18 58,16 60,16 C50,16 42,22 40,32 C38,38 38,38 38,38 Z"/>
+
+  <!-- Eyes -->
+  <path
+      android:fillColor="#0F172A"
+      android:pathData="M49,38 C49,34 53,34 53,38 C53,42 49,42 49,38 Z"/>
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M50,37 C50,36 51,36 51,37 C51,38 50,38 50,37 Z"/>
+
+  <path
+      android:fillColor="#0F172A"
+      android:pathData="M67,38 C67,34 71,34 71,38 C71,42 67,42 67,38 Z"/>
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M68,37 C68,36 69,36 69,37 C69,38 68,38 68,37 Z"/>
+
+  <!-- Cheeks -->
+  <path
+      android:fillColor="#F43F5E"
+      android:fillAlpha="0.35"
+      android:pathData="M45,44 C45,42 48,42 48,44 C48,46 45,46 45,44 Z"/>
+  <path
+      android:fillColor="#F43F5E"
+      android:fillAlpha="0.35"
+      android:pathData="M71,44 C71,42 74,42 74,44 C74,46 71,46 71,44 Z"/>
+
+  <!-- Smiling Mouth -->
+  <path
+      android:strokeColor="#0F172A"
+      android:strokeWidth="2"
+      android:fillColor="#F43F5E"
+      android:pathData="M53,48 C53,55 67,55 67,48 Z"/>
+
+  <!-- Colorful ABC Blocks Held in Hands -->
+  <rect x="25" y="95" width="22" height="22" rx="4" fill="#F43F5E"/>
+  <text x="32" y="111" fill="#FFFFFF" font-weight="bold" font-size="14">A</text>
+
+  <rect x="49" y="92" width="22" height="22" rx="4" fill="#F59E0B"/>
+  <text x="56" y="108" fill="#FFFFFF" font-weight="bold" font-size="14">B</text>
+
+  <rect x="73" y="95" width="22" height="22" rx="4" fill="#10B981"/>
+  <text x="80" y="111" fill="#FFFFFF" font-weight="bold" font-size="14">C</text>
+</vector>

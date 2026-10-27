@@ -4,9 +4,12 @@ data class Subject(
     val id: String = "",
     val titleEn: String = "",
     val titleUr: String = "",
+    val subtitleEn: String = "",
+    val subtitleUr: String = "",
     val iconName: String = "book",
     val displayOrder: Int = 0,
-    val isPublished: Boolean = true
+    val isPublished: Boolean = true,
+    val colorHex: Long = 0xFF2563EB
 )
 
 data class Lesson(

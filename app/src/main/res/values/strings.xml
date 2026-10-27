@@ -67,11 +67,21 @@
     <string name="dashboard_empty_progress_desc">No learning activities recorded yet. Select a subject below to earn your first star!</string>
 
     <!-- Subjects -->
-    <string name="subject_english">English Literacy</string>
+    <string name="subject_english">English</string>
     <string name="subject_urdu">اردو زبان (Urdu)</string>
-    <string name="subject_math">Mathematics</string>
-    <string name="subject_science">Science &amp; Nature</string>
+    <string name="subject_math">Math</string>
+    <string name="subject_science">Science</string>
+    <string name="subject_art">Art</string>
+    <string name="subject_computer">Computer</string>
     <string name="subject_general_knowledge">General Knowledge</string>
+    <string name="dashboard_categories_header">Educational Categories</string>
+    <string name="dashboard_categories_sub">Tap a subject card to begin your interactive lessons</string>
+    <string name="subject_english_subtitle">Alphabet, Phonics &amp; Reading</string>
+    <string name="subject_math_subtitle">Numbers, Counting &amp; Shapes</string>
+    <string name="subject_science_subtitle">Living Things, Plants &amp; Space</string>
+    <string name="subject_art_subtitle">Colors, Drawing &amp; Patterns</string>
+    <string name="subject_computer_subtitle">Coding, Logic &amp; Hardware</string>
+    <string name="subject_activities_count">%1$d Levels • %2$d Steps</string>
 
     <!-- Step Locking States -->
     <string name="step_locked">Locked</string>

@@ -26,14 +26,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.triplestar.learn.R
 import com.triplestar.learn.data.model.Badge
+import com.triplestar.learn.data.model.StepType
 import com.triplestar.learn.data.repository.CurriculumRepository
 import com.triplestar.learn.data.repository.ProgressRepository
 import com.triplestar.learn.ui.components.BadgeCelebrationDialog
+import com.triplestar.learn.ui.components.DrawingCanvasComponent
 import com.triplestar.learn.ui.theme.AstroBluePrimary
 import com.triplestar.learn.ui.theme.EmeraldSuccess
 import com.triplestar.learn.ui.theme.StarGoldPrimary
+import com.triplestar.learn.ui.components.ParticleExplosionEffect
 import com.triplestar.learn.util.BadgeManager
 import com.triplestar.learn.util.LocaleManager
+import com.triplestar.learn.util.TtsManager
+import androidx.compose.material.icons.filled.VolumeUp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,15 +69,22 @@ fun StepActivityScreen(
     var isSubmitting by remember { mutableStateOf(false) }
     var hasCompleted by remember { mutableStateOf(false) }
     var unlockedBadgeCelebration by remember { mutableStateOf<Badge?>(null) }
+    var showParticleExplosion by remember(stepId) { mutableStateOf(false) }
 
     val questions = currentStep?.questions ?: emptyList()
     val currentQuestion = questions.firstOrNull()
+    val isDrawingStep = currentStep?.stepType == StepType.DRAWING.name
+    var drawingFinished by remember(stepId) { mutableStateOf(false) }
 
     val title = if (currentLang == LocaleManager.LANG_URDU) currentStep?.titleUr ?: "" else currentStep?.titleEn ?: ""
     val content = if (currentLang == LocaleManager.LANG_URDU) currentStep?.contentUr ?: "" else currentStep?.contentEn ?: ""
 
     val needsAnswering = currentQuestion != null
-    val canComplete = if (needsAnswering) hasSubmittedAnswer && (isAnswerCorrect == true) else true
+    val canComplete = when {
+        needsAnswering -> hasSubmittedAnswer && (isAnswerCorrect == true)
+        isDrawingStep -> drawingFinished
+        else -> true
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize().testTag("step_activity_screen"),
@@ -92,14 +105,18 @@ fun StepActivityScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(20.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             Box(
                 modifier = Modifier
                     .size(72.dp)
@@ -117,11 +134,28 @@ fun StepActivityScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { TtsManager.speak(title, currentLang == LocaleManager.LANG_URDU) },
+                    modifier = Modifier.testTag("btn_speak_title")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VolumeUp,
+                        contentDescription = "Pronounce title",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -134,15 +168,67 @@ fun StepActivityScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = content,
-                            style = MaterialTheme.typography.bodyMedium,
-                            lineHeight = 22.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = content,
+                                style = MaterialTheme.typography.bodyMedium,
+                                lineHeight = 22.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { TtsManager.speak(content, currentLang == LocaleManager.LANG_URDU) },
+                                modifier = Modifier.testTag("btn_speak_content")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.VolumeUp,
+                                    contentDescription = "Pronounce content",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Interactive Drawing Canvas if drawing step
+            if (isDrawingStep) {
+                DrawingCanvasComponent(
+                    onDrawingCompleted = {
+                        drawingFinished = true
+                        showParticleExplosion = true
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                if (drawingFinished) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = EmeraldSuccess.copy(alpha = 0.15f)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = EmeraldSuccess
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Wonderful drawing! Click Complete Step below to save your masterpiece! 🎨",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = EmeraldSuccess
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             // Interactive Question / Quiz Card if questions exist
@@ -235,14 +321,14 @@ fun StepActivityScreen(
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
                                         Text(
-                                            text = if (isAnswerCorrect == true) "Correct! Great job! 🎉" else "Not quite right. Try again!",
+                                            text = if (isAnswerCorrect == true) "Correct! Great job! 🎉" else "Almost there! Keep going, you can do it! 💪",
                                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = if (isAnswerCorrect == true) EmeraldSuccess else MaterialTheme.colorScheme.error
+                                            color = if (isAnswerCorrect == true) EmeraldSuccess else MaterialTheme.colorScheme.primary
                                         )
                                         if (explanation.isNotBlank()) {
-                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Spacer(modifier = Modifier.height(4.dp))
                                             Text(
-                                                text = explanation,
+                                                text = "💡 Hint & Explanation: $explanation",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
@@ -259,7 +345,15 @@ fun StepActivityScreen(
                                 onClick = {
                                     if (selectedOptionIndex != null) {
                                         hasSubmittedAnswer = true
-                                        isAnswerCorrect = selectedOptionIndex == currentQuestion.correctIndex
+                                        val correct = selectedOptionIndex == currentQuestion.correctIndex
+                                        isAnswerCorrect = correct
+                                        val isUrdu = currentLang == LocaleManager.LANG_URDU
+                                        if (correct) {
+                                            showParticleExplosion = true
+                                            TtsManager.speak(if (isUrdu) "شاباش! بالکل درست جواب!" else "Awesome! That is correct!", isUrdu)
+                                        } else {
+                                            TtsManager.speak(if (isUrdu) "تقریباً درست! دوبارہ کوشش کریں۔" else "Almost there! Give it another try!", isUrdu)
+                                        }
                                     }
                                 },
                                 enabled = selectedOptionIndex != null,
@@ -318,16 +412,28 @@ fun StepActivityScreen(
                             val newCompletedCount = previousCompletedCount + (if (isFirstTime) 1 else 0)
                             val newStars = previousStars + (if (isFirstTime) currentStep.starsReward else 0)
 
+                            val nextStepInLesson = allSteps.firstOrNull { it.stepNumber == currentStep.stepNumber + 1 }
+                            val nextLessonFirstStepId = if (nextStepInLesson == null) {
+                                val lessons = curriculumRepository.getLessonsForSubject(subjectId)
+                                val currentLessonIndex = lessons.indexOfFirst { it.id == lessonId }
+                                if (currentLessonIndex >= 0 && currentLessonIndex < lessons.size - 1) {
+                                    val nextLesson = lessons[currentLessonIndex + 1]
+                                    curriculumRepository.getStepsForLesson(nextLesson.id).firstOrNull()?.id
+                                } else null
+                            } else null
+
                             val result = progressRepository.recordStepCompletion(
                                 childId = childId,
                                 parentId = parentId,
                                 subjectId = subjectId,
                                 step = currentStep,
-                                allStepsInLesson = allSteps
+                                allStepsInLesson = allSteps,
+                                nextLessonFirstStepId = nextLessonFirstStepId
                             )
                             isSubmitting = false
                             if (result.isSuccess) {
                                 hasCompleted = true
+                                showParticleExplosion = true
                                 val newBadge = BadgeManager.checkForNewUnlock(
                                     subjectId = subjectId,
                                     previousCompletedCount = previousCompletedCount,
@@ -338,6 +444,7 @@ fun StepActivityScreen(
                                 if (newBadge != null) {
                                     unlockedBadgeCelebration = newBadge
                                 } else {
+                                    delay(1200)
                                     onStepCompleted()
                                 }
                             }
@@ -375,5 +482,11 @@ fun StepActivityScreen(
                 )
             }
         }
+
+        ParticleExplosionEffect(
+            trigger = showParticleExplosion,
+            onAnimationEnd = { showParticleExplosion = false }
+        )
     }
+}
 }

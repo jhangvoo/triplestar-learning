@@ -94,7 +94,8 @@ class ProgressRepository(private val context: Context) {
         parentId: String,
         subjectId: String,
         step: Step,
-        allStepsInLesson: List<Step>
+        allStepsInLesson: List<Step>,
+        nextLessonFirstStepId: String? = null
     ): Result<Unit> {
         val db = getFirestore() ?: return Result.failure(IllegalStateException("Firestore backend is not configured"))
         val progressDocId = "${childId}_${subjectId}"
@@ -126,7 +127,8 @@ class ProgressRepository(private val context: Context) {
             val updated = StepLockEngine.computeProgressAfterStepCompletion(
                 currentProgress = existingProgress,
                 completedStep = step,
-                allStepsInLesson = allStepsInLesson
+                allStepsInLesson = allStepsInLesson,
+                nextLessonFirstStepId = nextLessonFirstStepId
             ).copy(
                 parentId = parentId,
                 updatedAt = Timestamp.now()

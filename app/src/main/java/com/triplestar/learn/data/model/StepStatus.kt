@@ -12,5 +12,6 @@ enum class StepType {
     LEARN,
     PRACTICE,
     QUIZ,
-    MASTER
+    MASTER,
+    DRAWING
 }

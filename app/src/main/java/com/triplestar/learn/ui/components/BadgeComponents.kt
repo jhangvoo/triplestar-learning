@@ -279,8 +279,9 @@ fun BadgeCelebrationDialog(
     }
 
     Dialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = RoundedCornerShape(28.dp),
+        Box(contentAlignment = Alignment.Center) {
+            Card(
+                shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             modifier = Modifier
@@ -375,6 +376,12 @@ fun BadgeCelebrationDialog(
                 }
             }
         }
+
+        ParticleExplosionEffect(
+            trigger = true,
+            particleCount = 100
+        )
     }
+}
 }
 

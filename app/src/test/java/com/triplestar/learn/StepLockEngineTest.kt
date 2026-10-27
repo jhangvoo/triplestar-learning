@@ -122,5 +122,33 @@ class StepLockEngineTest {
         assertEquals(10, updatedProgress.totalXp)
         assertEquals(1, updatedProgress.totalStars)
     }
+
+    @Test
+    fun `completed steps remain accessible for revision without resetting progress`() {
+        val revisionProgress = ChildProgress(
+            id = "child1_science",
+            childId = "child1",
+            parentId = "parent1",
+            subjectId = "science",
+            completedStepIds = listOf("step_1", "step_2"),
+            unlockedStepIds = listOf("step_1", "step_2", "step_3"),
+            totalXp = 25,
+            totalStars = 2
+        )
+
+        val status1 = StepLockEngine.resolveStepStatus(
+            step = lessonSteps[0],
+            allStepsInLesson = lessonSteps,
+            progress = revisionProgress
+        )
+        val status2 = StepLockEngine.resolveStepStatus(
+            step = lessonSteps[1],
+            allStepsInLesson = lessonSteps,
+            progress = revisionProgress
+        )
+
+        assertEquals(StepStatus.COMPLETED, status1)
+        assertEquals(StepStatus.COMPLETED, status2)
+    }
 }
 

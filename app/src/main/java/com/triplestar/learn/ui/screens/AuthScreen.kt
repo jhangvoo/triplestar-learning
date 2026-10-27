@@ -65,6 +65,7 @@ import com.triplestar.learn.data.repository.AuthRepository
 import com.triplestar.learn.data.state.AuthState
 import com.triplestar.learn.ui.components.LanguageToggle
 import com.triplestar.learn.ui.components.TripleStarLogoLockup
+import com.triplestar.learn.ui.components.AnimatedCharactersBanner
 import com.triplestar.learn.ui.theme.StarGoldPrimary
 import kotlinx.coroutines.launch
 
@@ -158,6 +159,8 @@ fun AuthScreen(
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    AnimatedCharactersBanner()
                     Spacer(modifier = Modifier.height(28.dp))
 
                     // Parent Login Anchor Card (Primary CTA)

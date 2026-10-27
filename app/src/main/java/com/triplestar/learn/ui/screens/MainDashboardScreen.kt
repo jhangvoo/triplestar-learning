@@ -1,8 +1,10 @@
 package com.triplestar.learn.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +24,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -71,6 +81,11 @@ import com.triplestar.learn.data.model.Subject
 import com.triplestar.learn.data.repository.AdRepository
 import com.triplestar.learn.ui.components.FixedAdBanner
 import com.triplestar.learn.ui.components.LanguageToggle
+import com.triplestar.learn.ui.components.EnglishAlphabetWritingStudio
+import com.triplestar.learn.ui.components.UrduAlphabetWritingStudio
+import com.triplestar.learn.ui.components.ScienceNatureExplorer
+import com.triplestar.learn.ui.components.MathExplorerStudio
+import com.triplestar.learn.ui.components.ComputerLogicStudio
 import com.triplestar.learn.ui.components.StarsPill
 import com.triplestar.learn.ui.components.StreakPill
 import com.triplestar.learn.ui.components.XpPill
@@ -335,21 +350,60 @@ private fun LearnTabContent(
             }
         }
 
-        // Subjects Title
+        // Educational Categories Header
         item {
-            Text(
-                text = stringResource(R.string.dashboard_subjects_title),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, bottom = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.dashboard_categories_header),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = StarGoldPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = "${subjects.size} Subjects",
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.dashboard_categories_sub),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
-        // Subjects List
+        // Educational Category Cards List
         items(subjects, key = { it.id }) { subject ->
             val title = if (currentLang == LocaleManager.LANG_URDU) subject.titleUr else subject.titleEn
+            val subtitle = if (currentLang == LocaleManager.LANG_URDU) subject.subtitleUr else subject.subtitleEn
             SubjectCard(
                 subject = subject,
                 displayTitle = title,
+                displaySubtitle = subtitle,
                 onClick = { onSubjectClick(subject.id) }
             )
         }
@@ -400,95 +454,251 @@ private fun LearnTabContent(
 private fun SubjectCard(
     subject: Subject,
     displayTitle: String,
+    displaySubtitle: String = "",
     onClick: () -> Unit
 ) {
+    val categoryColor = remember(subject.id, subject.colorHex) {
+        getSubjectColor(subject.id, subject.colorHex)
+    }
+    val categoryIcon = remember(subject.id, subject.iconName) {
+        getSubjectIcon(subject.id, subject.iconName)
+    }
+
+    // Color-coded background tint for each educational category card with rich vibrancy
+    val cardBackground = categoryColor.copy(alpha = 0.14f)
+    val cardBorder = categoryColor.copy(alpha = 0.35f)
+
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(containerColor = cardBackground),
+        border = BorderStroke(2.dp, cardBorder),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .fillMaxWidth()
             .testTag("subject_card_${subject.id}")
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Category Icon Badge with rich color-coded container
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(AstroBluePrimary.copy(alpha = 0.1f)),
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(categoryColor.copy(alpha = 0.22f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.MenuBook,
-                    contentDescription = null,
-                    tint = AstroBluePrimary,
-                    modifier = Modifier.size(26.dp)
+                    imageVector = categoryIcon,
+                    contentDescription = displayTitle,
+                    tint = categoryColor,
+                    modifier = Modifier.size(32.dp)
                 )
             }
+
             Spacer(modifier = Modifier.width(16.dp))
+
+            // Category Details
             Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Category Badge Pill
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(categoryColor.copy(alpha = 0.2f))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = displayTitle.uppercase(),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            ),
+                            color = categoryColor
+                        )
+                    }
+
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+
+                    Text(
+                        text = stringResource(R.string.step_available),
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = EmeraldSuccess
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
                     text = displayTitle,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Text(
-                    text = stringResource(R.string.step_available),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = EmeraldSuccess
+
+                if (displaySubtitle.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = displaySubtitle,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Action Chevron Pill with category color tint
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(categoryColor.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = categoryColor,
+                    modifier = Modifier.size(20.dp)
                 )
             }
-            Icon(
-                imageVector = Icons.Default.AutoAwesome,
-                contentDescription = null,
-                tint = StarGoldPrimary,
-                modifier = Modifier.size(20.dp)
-            )
         }
+    }
+}
+
+private fun getSubjectColor(subjectId: String, fallbackHex: Long): Color {
+    return when (subjectId.lowercase()) {
+        "english" -> Color(0xFFF43F5E) // Vibrant Coral Rose
+        "math" -> Color(0xFF2563EB)    // Vibrant Royal Astro Blue
+        "science" -> Color(0xFF10B981) // Vibrant Fresh Emerald Green
+        "art" -> Color(0xFF8B5CF6)     // Vibrant Creative Violet
+        "computer" -> Color(0xFF0284C7)// Vibrant Tech Sky Blue
+        "urdu" -> Color(0xFFF59E0B)    // Warm Golden Amber
+        "general_knowledge" -> Color(0xFF0D9488) // Global Teal
+        else -> Color(fallbackHex)
+    }
+}
+
+private fun getSubjectIcon(subjectId: String, iconName: String): ImageVector {
+    return when {
+        subjectId.equals("english", ignoreCase = true) || iconName == "menu_book" -> Icons.AutoMirrored.Filled.MenuBook
+        subjectId.equals("math", ignoreCase = true) || iconName == "calculate" -> Icons.Default.Calculate
+        subjectId.equals("science", ignoreCase = true) || iconName == "science" -> Icons.Default.Science
+        subjectId.equals("art", ignoreCase = true) || iconName == "palette" -> Icons.Default.Palette
+        subjectId.equals("computer", ignoreCase = true) || iconName == "computer" -> Icons.Default.Computer
+        subjectId.equals("urdu", ignoreCase = true) || iconName == "book_open" -> Icons.Default.AutoStories
+        subjectId.equals("general_knowledge", ignoreCase = true) || iconName == "globe" -> Icons.Default.Public
+        else -> Icons.AutoMirrored.Filled.MenuBook
     }
 }
 
 @Composable
 private fun PracticeTabContent(adRepository: AdRepository) {
-    Column(
+    var selectedStudio by remember { mutableIntStateOf(0) } // 0 = Urdu, 1 = English
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(horizontal = 16.dp)
             .testTag("tab_practice_content"),
-        verticalArrangement = Arrangement.SpaceBetween
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.AutoAwesome,
-                contentDescription = null,
-                tint = StarGoldPrimary,
-                modifier = Modifier.size(56.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.nav_practice),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.step_lock_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = selectedStudio == 0,
+                    onClick = { selectedStudio = 0 },
+                    label = {
+                        Text(
+                            text = "اردو حروف (ا تا ے)",
+                            fontWeight = if (selectedStudio == 0) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    modifier = Modifier.testTag("chip_practice_urdu")
+                )
+                FilterChip(
+                    selected = selectedStudio == 1,
+                    onClick = { selectedStudio = 1 },
+                    label = {
+                        Text(
+                            text = "English (A–Z)",
+                            fontWeight = if (selectedStudio == 1) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    modifier = Modifier.testTag("chip_practice_english")
+                )
+                FilterChip(
+                    selected = selectedStudio == 2,
+                    onClick = { selectedStudio = 2 },
+                    label = {
+                        Text(
+                            text = "🌿 Science & Nature",
+                            fontWeight = if (selectedStudio == 2) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    modifier = Modifier.testTag("chip_practice_science")
+                )
+                FilterChip(
+                    selected = selectedStudio == 3,
+                    onClick = { selectedStudio = 3 },
+                    label = {
+                        Text(
+                            text = "🔢 Math (1–20 & Puzzles)",
+                            fontWeight = if (selectedStudio == 3) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    modifier = Modifier.testTag("chip_practice_math")
+                )
+                FilterChip(
+                    selected = selectedStudio == 4,
+                    onClick = { selectedStudio = 4 },
+                    label = {
+                        Text(
+                            text = "💻 Computer & Logic",
+                            fontWeight = if (selectedStudio == 4) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    modifier = Modifier.testTag("chip_practice_computer")
+                )
+            }
         }
 
-        FixedAdBanner(
-            config = adRepository.getFixedPlacement(AdPlacementLocation.PRACTICE_SUMMARY_BOTTOM)
-        )
+        item {
+            when (selectedStudio) {
+                0 -> UrduAlphabetWritingStudio()
+                1 -> EnglishAlphabetWritingStudio()
+                2 -> ScienceNatureExplorer()
+                3 -> MathExplorerStudio()
+                4 -> ComputerLogicStudio()
+            }
+        }
+
+        item {
+            FixedAdBanner(
+                config = adRepository.getFixedPlacement(AdPlacementLocation.PRACTICE_SUMMARY_BOTTOM)
+            )
+        }
     }
 }
 

@@ -30,6 +30,11 @@ abstract class FirestoreEmulatorTestBase {
 
     @Before
     open fun setUpFirebase() {
+        org.junit.Assume.assumeTrue(
+            "Firebase Auth emulator is not reachable at $EMULATOR_HOST:$AUTH_PORT",
+            isEmulatorRunning()
+        )
+
         val context = ApplicationProvider.getApplicationContext<Context>()
         val resId = context.resources.getIdentifier("firestore_database_id", "string", context.packageName)
         databaseId = if (resId != 0) context.getString(resId) else "ai-studio-android-dc02af27-0c06-44f6-9519-ca2c069993c7"
@@ -61,9 +66,22 @@ abstract class FirestoreEmulatorTestBase {
         } catch (_: IllegalStateException) {}
     }
 
+    private fun isEmulatorRunning(): Boolean {
+        return try {
+            java.net.Socket().use { socket ->
+                socket.connect(java.net.InetSocketAddress(EMULATOR_HOST, AUTH_PORT), 300)
+                true
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     @After
     open fun tearDownFirebase() {
-        auth.signOut()
+        if (::auth.isInitialized) {
+            auth.signOut()
+        }
     }
 
     protected suspend fun signInTestUser(email: String): String = withContext(Dispatchers.IO) {

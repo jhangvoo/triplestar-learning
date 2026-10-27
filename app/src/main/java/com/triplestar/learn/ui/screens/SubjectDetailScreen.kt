@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -58,6 +58,12 @@ import com.triplestar.learn.ui.components.FixedAdBanner
 import com.triplestar.learn.ui.theme.AstroBluePrimary
 import com.triplestar.learn.ui.theme.EmeraldSuccess
 import com.triplestar.learn.ui.theme.StarGoldPrimary
+import com.triplestar.learn.ui.components.EnglishAlphabetWritingStudio
+import com.triplestar.learn.ui.components.UrduAlphabetWritingStudio
+import com.triplestar.learn.ui.components.ScienceNatureExplorer
+import com.triplestar.learn.ui.components.MathExplorerStudio
+import com.triplestar.learn.ui.components.ComputerLogicStudio
+import com.triplestar.learn.ui.components.AudioLearningStudio
 import com.triplestar.learn.util.LocaleManager
 import com.triplestar.learn.util.StepLockEngine
 
@@ -108,15 +114,51 @@ fun SubjectDetailScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(lessons, key = { it.id }) { lesson ->
+            item {
+                AudioLearningStudio()
+            }
+
+            if (subjectId == "english") {
+                item {
+                    EnglishAlphabetWritingStudio()
+                }
+            } else if (subjectId == "urdu") {
+                item {
+                    UrduAlphabetWritingStudio()
+                }
+            } else if (subjectId == "science") {
+                item {
+                    ScienceNatureExplorer()
+                }
+            } else if (subjectId == "math") {
+                item {
+                    MathExplorerStudio()
+                }
+            } else if (subjectId == "computer") {
+                item {
+                    ComputerLogicStudio()
+                }
+            }
+
+            itemsIndexed(lessons, key = { _, lesson -> lesson.id }) { index, lesson ->
                 val lessonSteps = remember(lesson.id) { curriculumRepository.getStepsForLesson(lesson.id) }
                 val title = if (currentLang == LocaleManager.LANG_URDU) lesson.titleUr else lesson.titleEn
+
+                val completedSet = progress?.completedStepIds?.toSet() ?: emptySet()
+                val isPrerequisiteLessonCompleted = if (index == 0) {
+                    true
+                } else {
+                    val prevLesson = lessons[index - 1]
+                    val prevSteps = curriculumRepository.getStepsForLesson(prevLesson.id)
+                    prevSteps.isNotEmpty() && prevSteps.all { completedSet.contains(it.id) }
+                }
 
                 LessonCard(
                     lesson = lesson,
                     displayTitle = title,
                     steps = lessonSteps,
                     progress = progress,
+                    isPrerequisiteLessonCompleted = isPrerequisiteLessonCompleted,
                     onStepClick = { stepId -> onStepClick(lesson.id, stepId) },
                     currentLang = currentLang
                 )
@@ -137,6 +179,7 @@ private fun LessonCard(
     displayTitle: String,
     steps: List<Step>,
     progress: ChildProgress?,
+    isPrerequisiteLessonCompleted: Boolean,
     onStepClick: (stepId: String) -> Unit,
     currentLang: String,
     modifier: Modifier = Modifier
@@ -156,7 +199,7 @@ private fun LessonCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             steps.forEach { step ->
-                val status = StepLockEngine.resolveStepStatus(step, steps, progress)
+                val status = StepLockEngine.resolveStepStatus(step, steps, progress, isPrerequisiteLessonCompleted)
                 val stepTitle = if (currentLang == LocaleManager.LANG_URDU) step.titleUr else step.titleEn
                 val isClickable = status != StepStatus.LOCKED
 

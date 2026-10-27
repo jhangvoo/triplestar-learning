@@ -6,6 +6,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.firebase.FirebaseApp
 import com.triplestar.learn.util.LocaleManager
+import com.triplestar.learn.util.TtsManager
 
 class TripleStarApplication : Application() {
     override fun onCreate() {
@@ -22,8 +23,11 @@ class TripleStarApplication : Application() {
             Log.e("TripleStarApplication", "Failed to initialize Firebase", e)
         }
 
-        // Ensure language preference is applied at startup
+        // Ensure language preference, math progress, and computer progress are applied at startup
         LocaleManager.init(this)
+        TtsManager.init(this)
+        com.triplestar.learn.util.MathProgressManager.init(this)
+        com.triplestar.learn.util.ComputerProgressManager.init(this)
 
         // Configure Google Mobile Ads SDK strictly for Child / Families safety (COPPA & Play Families Policy)
         try {

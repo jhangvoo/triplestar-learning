@@ -67,11 +67,21 @@
     <string name="dashboard_empty_progress_desc">ابھی تک کوئی تعلیمی سرگرمی ریکارڈ نہیں ہوئی۔ پہلا ستارہ جیتنے کے لیے نیچے دیا گیا کوئی مضمون منتخب کریں!</string>
 
     <!-- Subjects -->
-    <string name="subject_english">انگریزی زبان</string>
+    <string name="subject_english">انگریزی</string>
     <string name="subject_urdu">اردو زبان و ادب</string>
-    <string name="subject_math">ریاضی (میتھس)</string>
-    <string name="subject_science">سائنس اور فطرت</string>
+    <string name="subject_math">ریاضی</string>
+    <string name="subject_science">سائنس</string>
+    <string name="subject_art">آرٹ اور ڈرائنگ</string>
+    <string name="subject_computer">کمپیوٹر اور کوڈنگ</string>
     <string name="subject_general_knowledge">عام معلومات (جنرل نالج)</string>
+    <string name="dashboard_categories_header">تعلیمی مضامین</string>
+    <string name="dashboard_categories_sub">سیکھنے کا سفر شروع کرنے کے لیے مضمون منتخب کریں</string>
+    <string name="subject_english_subtitle">حروف، صوتیات اور الفاظ</string>
+    <string name="subject_math_subtitle">گنتی، جمع تفریق اور شکلیں</string>
+    <string name="subject_science_subtitle">جاندار، پودے، موسم اور کائنات</string>
+    <string name="subject_art_subtitle">رنگ، ڈیزائن اور تخلیقی صلاحیت</string>
+    <string name="subject_computer_subtitle">ہارڈویئر، ٹائپنگ اور لاجک</string>
+    <string name="subject_activities_count">%1$d لیولز • %2$d مراحل</string>
 
     <!-- Step Locking States -->
     <string name="step_locked">مقفل ہے</string>
